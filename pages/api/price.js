@@ -1,6 +1,10 @@
 import { validate as uuidValidate, v4 as uuidv4 } from 'uuid';
 import { request } from '../../src/helpers/api'
-import { addCache, removeCache, getCache, isExpired } from '../../src/helpers/cache'
+import * as CacheFile from '../../src/helpers/cache'
+import * as CacheMap from '../../src/helpers/cachemap'
+
+const useMap = true
+const Cache = useMap ? CacheMap : CacheFile
 
 function filterRequest(data) {
   const params = {}
@@ -165,17 +169,17 @@ async function getCurrency() {
   const filename = 'currency.cache'
   const urlText = process.env.API_CURRENCY_URL
   const queries = { name: 'currency' }
-  if (isExpired(filename, queries, 1, 'hour')) {
+  if (Cache.isExpired(filename, queries, 1, 'hour')) {
     const [error, result] = await request(urlText, 'v4/latest/USD', { method: 'GET' })
       .then(v => [null, v]).catch(e => [e, null])
     if (!error) {
-      removeCache(filename, queries)
-      addCache(filename, queries, result)
+      Cache.removeCache(filename, queries)
+      Cache.addCache(filename, queries, result)
       const rates = result?.data?.rates || {}
       return { usd: Number(rates?.USD || 0), idr: Number(rates?.IDR || 0) }
     }
   } else {
-    const result = getCache(filename, queries)
+    const result = Cache.getCache(filename, queries)
     if (result) {
       const rates = result?.data?.rates || {}
       return { usd: Number(rates?.USD || 0), idr: Number(rates?.IDR || 0) }
@@ -190,16 +194,18 @@ export default async function handler(req, res) {
   const urlText = process.env.API_URL
   const method = req.method
 
-  function callbackResponse(response, currency, query, isCache = false) {
-    if (typeof response === 'object') {
-      if (response?.data) {
-        const data = filterResult(response.data, currency)
+  function callbackResponse(result, currency, query, isCache = false) {
+    let output = Object.assign({}, result)
+    if (typeof result === 'object') {
+      if (result?.data) {
+        const data = filterResult(result.data, currency)
         const summary = filterSummary(data, query)
-        response.data = data
-        response.summary = summary
+        output.data = data
+        output.summary = summary
       }
-      Object.assign(response, { source: isCache ? 'cache' : 'network' })
+      Object.assign(output, { source: isCache ? 'cache' : 'network' })
     }
+    return output
   }
 
   if (method === 'GET') {
@@ -208,17 +214,15 @@ export default async function handler(req, res) {
 
     const currency = await getCurrency()
     let response = {}
-    if (isExpired(filename, queries, 3, 'minute') || queryraws?.update) {
+    if (Cache.isExpired(filename, queries, 3, 'minute') || queryraws?.update) {
       const [error, result] = await request(urlText, pathChild, { method, queries })
         .then(v => [null, v]).catch(e => [e, null])
-      removeCache(filename, queries)
-      addCache(filename, queries, result)
-      response = error ? error : result
-      callbackResponse(response, currency, queryraws)
+      Cache.removeCache(filename, queries)
+      Cache.addCache(filename, queries, result)
+      response = callbackResponse(error ? error : result, currency, queryraws)
     } else {
-      const resultCache = getCache(filename, queries)
-      response = resultCache || {}
-      callbackResponse(response, currency, queryraws, true)
+      const result = Cache.getCache(filename, queries)
+      response = callbackResponse(result, currency, queryraws, true)
     }
     res.status(200).json(response)
   } else {

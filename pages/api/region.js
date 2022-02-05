@@ -1,5 +1,9 @@
 import { request } from '../../src/helpers/api'
-import { addCache, removeCache, getCache, isExpired } from '../../src/helpers/cache'
+import * as CacheFile from '../../src/helpers/cache'
+import * as CacheMap from '../../src/helpers/cachemap'
+
+const useMap = true
+const Cache = useMap ? CacheMap : CacheFile
 
 export default async function handler(req, res) {
   const pathChild = 'option_area'
@@ -14,17 +18,17 @@ export default async function handler(req, res) {
   const queries = Object.assign({ limit: 100 }, req.query || {})
 
   let response = {}
-  if (isExpired(filename, queries, 24, 'hour')) {
+  if (Cache.isExpired(filename, queries, 24, 'hour')) {
     const [error, result] = await request(urlText, pathChild, { method, queries })
       .then(v => [null, v]).catch(e => [e, null])
-    removeCache(filename, queries)
-    addCache(filename, queries, result)
+    Cache.removeCache(filename, queries)
+    Cache.addCache(filename, queries, result)
     response = error ? error : result
     if (typeof response === 'object') {
       Object.assign(response, { source: 'network' })
     }
   } else {
-    const resultCache = getCache(filename, queries)
+    const resultCache = Cache.getCache(filename, queries)
     response = resultCache || {}
     if (typeof response === 'object') {
       Object.assign(response, { source: 'cache' })
