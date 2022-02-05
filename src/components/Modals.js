@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ExclamationIcon, XIcon, SearchIcon } from '@heroicons/react/solid'
+import { ExclamationIcon, XIcon, SearchIcon, RefreshIcon } from '@heroicons/react/solid'
 import { Button, InputText, InputSelect } from './Elements'
 
 export function ModalSelection(props) {
@@ -73,7 +73,7 @@ export function ModalFilter(props) {
     if (modalEl) { 
       const comodityEl = modalEl.querySelector('#comodity input[type="text"]')
       const provinceEl = modalEl.querySelector('#province input[type="text"]')
-      const cityEl = modalEl.querySelector('#province input[type="text"]')
+      const cityEl = modalEl.querySelector('#city input[type="text"]')
 
       params = { comodityName: comodityEl?.value, province: provinceEl?.value, city: cityEl?.value }
     }
@@ -106,7 +106,10 @@ export function ModalFilter(props) {
             <InputSelect id="city" label="pilih kota" placeholder="Pilih area kota sesudah provinsi" value={data?.city} clicked={() => handleButton('open-city')} />
           </div>
           <div className="p-2">
-            <div className="grid grid-cols-1 gap-[5px]">
+            <div className="grid grid-cols-2 gap-[5px]">
+              <Button text="reset" type="secondary" clicked={() => handleButton('reset')}>
+                <RefreshIcon className="w-5 h-5 mr-1" />
+              </Button>
               <Button text="cari" type="danger" clicked={() => handleButton('save')}>
                 <SearchIcon className="w-5 h-5 mr-1" />
               </Button>

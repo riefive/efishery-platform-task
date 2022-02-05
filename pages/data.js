@@ -87,7 +87,7 @@ export default function Home() {
   }
 
   function handleModalFilter(menu, additions) {
-    if (['open', 'close', 'save'].includes(menu)) {
+    if (['open', 'close', 'save', 'reset'].includes(menu)) {
       const element = document.getElementById('filter-modal')
       if (element) {
         element.classList.toggle('hidden')
@@ -98,8 +98,12 @@ export default function Home() {
         if (additions?.comodityName !== '') params.name = additions?.comodityName
         if (additions?.province !== '') params.province = additions?.province
         if (additions?.city !== '') params.city = additions?.city
+        if (Object.keys(params).length === 0) params.limit = 100
         setDataForm(null)
         refresh(Object.assign(params, { update: true }))
+      } else if (menu === 'reset') {
+        setDataForm(null)
+        refresh(Object.assign({ limit: 100, update: true }))
       }
     } else {
       callbackForm(menu)
