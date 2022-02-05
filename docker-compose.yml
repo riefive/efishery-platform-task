@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  sample:
+    container_name: sample
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+      - '/app/.next'
+    env_file:
+      - .env
+    ports:
+      - 3005:3000

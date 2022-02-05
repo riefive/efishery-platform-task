@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@layer components {
+  .button-base {
+		@apply flex justify-center items-center cursor-pointer select-none rounded-md w-full h-10;
+	}
+
+  .input-base {
+		@apply border bg-white focus:outline-none focus:ring-1 rounded-[4px];
+	}
+
+	.input-text-base {
+		@apply input-base px-[15px] w-full h-[40px];
+	}
+
+	.input-textarea-base {
+		@apply input-base pt-[10px] px-[15px] w-full min-h-[100px];
+	}
+
+  .input-table-text {
+    @apply border rounded shadow appearance-none text-gray-700 focus:outline-none w-full py-2 px-3;
+  }
+
+  .border-line {
+    @apply border border-t border-gray-200;
+  }
+
+  .popup {
+    @apply fixed overflow-y-hidden bg-black bg-opacity-30 inset-0 z-20 w-full h-full;
+  }
+
+  .modal {
+    @apply fixed right-0 left-0 top-20 z-50 select-none flex justify-center items-center md:inset-0 sm:h-full;
+  }
+
+  .modal-wrapper {
+    @apply relative px-4 w-full max-w-md h-full md:h-auto;
+  }
+
+  .modal-content {
+    @apply relative bg-white rounded-lg shadow dark:bg-gray-700;
+  }
+
+  .modal-content-child {
+    @apply overflow-y-scroll min-h-[200px] max-h-[350px] p-2;
+  }
+
+  .modal-content-select {
+    @apply overflow-y-scroll h-[375px] p-2;
+  }
+
+  .modal-close {
+    @apply inline-flex items-center bg-transparent text-gray-400 hover:bg-gray-200 hover:text-gray-900 text-sm cursor-pointer rounded-lg p-1.5 ml-auto dark:hover:bg-gray-800 dark:hover:text-white
+  }
+
+  .menu-active {
+		@apply text-gray-900 bg-gray-200 outline-none rounded-md;
+	}
+
+	.menu-hover {
+		@apply hover:text-gray-900 hover:bg-gray-200 focus:text-gray-900 focus:bg-gray-200 focus:outline-none rounded-md;
+	}
+
+  .scrollbar-thin {
+		-ms-overflow-style: thin !important; /* Internet Explorer 10+ */
+		scrollbar-width: thin !important; /* Firefox */
+	}
+
+	.scrollbar-thin::-webkit-scrollbar {
+		@apply bg-gray-300 w-[4px] h-[4px];
+	}
+
+	.scrollbar-thin::-webkit-scrollbar-track {
+		@apply bg-gray-400 rounded-[20px];
+	}
+
+	.scrollbar-thin::-webkit-scrollbar-thumb {
+		@apply bg-gray-400;
+	}
+
+	.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+		@apply bg-gray-300 cursor-pointer;
+	}
+
+	.scrollbar-thin::-webkit-scrollbar-thumb:horizontal {
+		@apply bg-gray-300;
+	}
+}
